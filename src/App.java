@@ -34,80 +34,99 @@ public class App {
 
         drawBoard(n, board);
         System.out.println("********************");
+
         turn = 0;
         while (true) {
             if (turn == 0) {
                 Boolean didScore = false;
                 do {
                     Step step = Mark();
-                    didScore = Check(step, n, board);
-
+                    didScore = Check(step.getRow(), step.getColumn(), step.getCharacter(), n, board);
                     drawBoard(n, board);
 
-                    System.out.println(board[1][1] + " 13131232131231231213");
-                    didScore = true;
                 } while (didScore);
-                turn = 1;
+
             }
         }
 
     }
 
-    private static Boolean Check(Step step, int n, String board[][]) {
+    private static Boolean Check(int row, int column, String type, int n, String board[][]) {
 
         Boolean didScore = false;
 
-        final int row = step.getRow();
-        final int column = step.getColumn();
-        final String type = step.getCharacter();
-        if (type == "O") {
+        if (type.equals("O")) {
+            System.out.println("OOOOOOOO");
 
             for (int i = 0; i < 4; i++) {
                 String r1 = "";
                 String r2 = "";
                 String r3 = "";
 
-                if (i == 0 && column != 0 && (column + 1) != n) {
+                if (i == 0) {
                     r1 = board[row][column - 1];
                     r2 = board[row][column];
                     r3 = board[row][column + 1];
-                } else if (i == 1 && row != 0 && (row + 1) != n) {
+                    if (isSOS(r1, r2, r3)) {
+                        didScore = true;
+                        playerScore++;
+                        break;
+                    }
+                } else if (i == 1) {
                     r1 = board[row - 1][column];
                     r2 = board[row][column];
                     r3 = board[row + 1][column];
-                } else if (i == 2 && (row != 0 && column != 0) && ((row + 1) != n && (column + 1) != n)) {
-                    r3 = board[row - 1][column - 1];
+                    if (isSOS(r1, r2, r3)) {
+                        didScore = true;
+                        playerScore++;
+                        break;
+                    }
+                }
+
+                else if (i == 2) {
+                    r1 = board[row - 1][column - 1];
                     r2 = board[row][column];
                     r3 = board[row + 1][column + 1];
-                } else if (i == 3 && (row != 0 && (column + 1) != n) && (column != 0 && (row + 1) != n)) {
-                    r3 = board[row - 1][column + 1];
+                    if (isSOS(r1, r2, r3)) {
+                        didScore = true;
+                        playerScore++;
+                        break;
+                    }
+
+                } else if (i == 3) {
+                    r1 = board[row - 1][column + 1];
                     r2 = board[row][column];
                     r3 = board[row + 1][column - 1];
-                }
-                if ("SOS" == (r1 + r2 + r3)) {
-                    System.out.println("TRUEEUEUEUEUUEUEU");
-                    didScore = true;
-                    break;
+                    if (isSOS(r1, r2, r3)) {
+                        didScore = true;
+                        playerScore++;
+                        break;
+                    }
                 }
             }
+
+        } else if (type.equals("S"))
+
+        {
+            System.out.println("SSSSSSS");
         }
 
         return didScore;
     }
 
     private static Step Mark() {
+        Scanner input = new Scanner(System.in);
 
+        System.out.println("S veya O, Satır ve Sütun giriniz ");
+        String character = input.nextLine().toUpperCase();
+
+        int row = input.nextInt();
+        int column = input.nextInt();
         System.out.println();
-        System.out.println("S veya O");
-        String character = scanner.next();
-        System.out.println("Satır");
-        int row = scanner.nextInt();
-        System.out.println("Sütun");
-        int column = scanner.nextInt();
 
         board[row - 1][column - 1] = character;
 
-        return new Step(row, column, character);
+        return new Step(row - 1, column - 1, character);
 
     }
 
@@ -128,4 +147,11 @@ public class App {
         }
     }
 
+    public static Boolean isSOS(String r1, String r2, String r3) {
+        if ("SOS".equals(r1 + r2 + r3)) {
+            System.out.println("TRUEEUEUEUEUUEUEU");
+            return true;
+        }
+        return false;
+    }
 }
