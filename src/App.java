@@ -18,12 +18,21 @@ public class App {
         turn = 0;
         while (true) {
             if (turn == 0) {
+                if (isGameFinished(n)) {
+                    break;
+                }
+
                 Boolean didScore = false;
                 do {
+
                     Step step = Mark();
                     didScore = Check(step.getRow(), step.getColumn(), step.getCharacter(), n, board);
 
                     stepCount++;
+                    System.out.print("\033\143");
+                    if (didScore == true) {
+                        System.out.println("TRUE TRUE TRUE");
+                    }
                     System.out.println("******************** " + stepCount + ". EL" + " ********************");
                     System.out.println("********************");
                     System.out.println();
@@ -34,15 +43,18 @@ public class App {
                     if (didScore) {
                         playerScore++;
                     }
+
+                    writeScore();
                     didScore = true; // TODO: for test, remove later
 
                 } while (didScore);
                 turn = 1; // if didScore is not tue
             }
             if (turn == 1) {
+                if (isGameFinished(n)) {
+                    break;
+                }
                 // AI plays
-            } else if (isGameFinished(n)) {
-                break;
             }
         }
 
@@ -61,7 +73,7 @@ public class App {
                 String r2 = "";
                 String r3 = "";
 
-                if (i == 0 && column != 0 && (column + 1) != n) {
+                if (i == 0 && Board.notInLeftCorner(column, n) && Board.notInRightcorner(column, n)) {
                     r1 = board[row][column - 1];
                     r2 = board[row][column];
                     r3 = board[row][column + 1];
@@ -69,7 +81,7 @@ public class App {
                         didScore = true;
                         break;
                     }
-                } else if (i == 1 && row != 0 && (row + 1) != n) {
+                } else if (i == 1 && Board.notInUpCorner(row, n) && Board.notInDownCorner(row, n)) {
                     r1 = board[row - 1][column];
                     r2 = board[row][column];
                     r3 = board[row + 1][column];
@@ -79,7 +91,7 @@ public class App {
                     }
                 }
 
-                else if (i == 2 && (row != 0 && column != 0) && ((row + 1) != n) && (column + 1) != n) {
+                else if (i == 2 && Board.notInAllCorners(row, column, n)) {
                     r1 = board[row - 1][column - 1];
                     r2 = board[row][column];
                     r3 = board[row + 1][column + 1];
@@ -88,7 +100,7 @@ public class App {
                         break;
                     }
 
-                } else if (i == 3 && (row != 0 && (column + 1) != n) && (column != 0) && (row + 1) != n) {
+                } else if (i == 3 && Board.notInAllCorners(row, column, n)) {
                     r1 = board[row - 1][column + 1];
                     r2 = board[row][column];
                     r3 = board[row + 1][column - 1];
@@ -100,6 +112,8 @@ public class App {
             }
 
         } else if (type.equals("S")) {
+            System.out.println("SSSSSSSSSS");
+
             for (int i = 0; i < 8; i++) {
                 String r1 = "";
                 String r2 = "";
@@ -210,7 +224,6 @@ public class App {
 
     public static Boolean isSos(String r1, String r2, String r3) {
         if ("SOS".equals(r1 + r2 + r3)) {
-            System.out.println("TRUEEUEUEUEUUEUEU");
             return true;
         } else
             return false;
@@ -319,5 +332,10 @@ public class App {
             System.out.println("Oyun Berabere! Zorlu bir maçtı!");
         }
         scanner.close();
+    }
+
+    public static void writeScore() {
+        System.out.println("Oyuncu puanı: " + playerScore);
+        System.out.println("Bilgisayar puanı: " + aiScore);
     }
 } // main
