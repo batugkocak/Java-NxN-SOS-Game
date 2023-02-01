@@ -12,7 +12,9 @@ public class App {
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws Exception {
+        Ai ai = new Ai();
 
+        clearScreen();
         startGame();
 
         turn = 0;
@@ -21,47 +23,65 @@ public class App {
                 if (isGameFinished(n)) {
                     break;
                 }
-
                 Boolean didScore = false;
                 do {
-
                     Step step = Mark();
-                    didScore = Check(step.getRow(), step.getColumn(), step.getCharacter(), n, board);
-
+                    didScore = check(step.getRow(), step.getColumn(), step.getCharacter(), n, board);
                     stepCount++;
-                    System.out.print("\033\143");
+
                     if (didScore == true) {
                         System.out.println("TRUE TRUE TRUE");
                     }
-                    System.out.println("******************** " + stepCount + ". EL" + " ********************");
-                    System.out.println("********************");
-                    System.out.println();
                     drawBoard(n, board);
-                    System.out.println();
-                    System.out.println("********************");
 
                     if (didScore) {
                         playerScore++;
                     }
 
                     writeScore();
-                    didScore = true; // TODO: for test, remove later
+                    // didScore = true; // TODO: for test, remove later
 
                 } while (didScore);
-                turn = 1; // if didScore is not tue
+                turn = 1; // if didScore is not true
             }
             if (turn == 1) {
                 if (isGameFinished(n)) {
-                    break;
+                    finishGame();
                 }
-                // AI plays
+
+                // Her noktayı gezer
+                for (int i = 0; i < n; i++) {
+                    for (int j = 0; j < n; j++) {
+                        String[][] tempBoard = board;
+
+                        if (tempBoard[i][j].equals("S") || tempBoard[i][j].equals("O"))
+                            continue;
+
+                        tempBoard[i][j] = "S";
+
+                        if (check(i, j, "S", n, tempBoard)) {
+                            stepCount++;
+                            clearScreen();
+                            aiScore++;
+                            board[i][j] = "S";
+                            drawBoard(n, board);
+                            writeScore();
+                        }
+                        tempBoard[i][j] = "_";
+                    }
+
+                    drawBoard(n, board);
+                    writeScore();
+                }
+                turn = 0;
+
             }
         }
 
         System.out.println("OYUN BİTTİ İHTİYAR");
     } // Main
 
-    private static Boolean Check(int row, int column, String type, int n, String board[][]) {
+    private static Boolean check(int row, int column, String type, int n, String board[][]) {
 
         Boolean didScore = false;
 
@@ -206,6 +226,11 @@ public class App {
     } // Mark
 
     private static void drawBoard(int n, String board[][]) {
+        clearScreen();
+
+        System.out.println("******************** " + stepCount + ". EL" + " ********************");
+        System.out.println("********************");
+        System.out.println();
 
         System.out.print(" ");
         for (int i = 0; i < n; i++) {
@@ -220,6 +245,9 @@ public class App {
             System.out.println();
             System.out.println();
         }
+
+        System.out.println();
+        System.out.println("********************");
     } // drawBoard
 
     public static Boolean isSos(String r1, String r2, String r3) {
@@ -246,9 +274,7 @@ public class App {
         n = scanner.nextInt();
 
         board = new String[n][n];
-        for (
-
-                int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 board[i][j] = "_";
             }
@@ -338,4 +364,10 @@ public class App {
         System.out.println("Oyuncu puanı: " + playerScore);
         System.out.println("Bilgisayar puanı: " + aiScore);
     }
+
+    public static void clearScreen() {
+        System.out.print("\033\143");
+
+    }
+
 } // main
